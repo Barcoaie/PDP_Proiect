@@ -205,7 +205,7 @@ namespace PDP_Proiect
             }
         }
 
-        private readonly object houghLock = new object();
+        private static readonly object houghLock = new object();
         private int[][] houghArr;
         private int[][] houghNoTh;
         private int[][] filteredImg;

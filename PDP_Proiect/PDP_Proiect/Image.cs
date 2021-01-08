@@ -74,14 +74,17 @@ namespace PDP_Proiect
                     row++;
                     if (row == height) break;
                 }
-                Color rgb = bmp.GetPixel(col,row);
-                rValues[row][col] = rgb.R;
-                gValues[row][col] = rgb.G;
-                bValues[row][col] = rgb.B;
-                gray[row][col] = (int)(rValues[row][col] * 0.299 + gValues[row][col] * 0.587 + bValues[row][col] * 0.114);
-                gray[row][col] = gray[row][col] > 255 ? 255 : gray[row][col];
-                done++;
-                col++;
+                lock (sobelLock)
+                {
+                    Color rgb = bmp.GetPixel(col, row);
+                    rValues[row][col] = rgb.R;
+                    gValues[row][col] = rgb.G;
+                    bValues[row][col] = rgb.B;
+                    gray[row][col] = (int)(rValues[row][col] * 0.299 + gValues[row][col] * 0.587 + bValues[row][col] * 0.114);
+                    gray[row][col] = gray[row][col] > 255 ? 255 : gray[row][col];
+                    done++;
+                    col++;
+                }
             }
         }
 
@@ -206,7 +209,7 @@ namespace PDP_Proiect
             int elemPerThr = (width * height) / Program.nr_threads;
             int ord = 1;
             List<Task<bool>> tasks = new List<Task<bool>>();
-            Bitmap bitmap = new Bitmap(width, height);
+            MyBitmap bitmap = new MyBitmap(width, height);
             for (int i = 0; i < Program.nr_threads; i++)
             {
                 if (i + 1 == Program.nr_threads)
@@ -217,16 +220,17 @@ namespace PDP_Proiect
                 int finalElemPerThr = elemPerThr;
                 tasks.Add(Task.Factory.StartNew(() =>
                 {
-                    writeColouredToFile(XY, finalElemPerThr, ref bitmap);
+                    writeColouredToFile(XY, finalElemPerThr, bitmap);
                     return true;
                 }));
                 ord += elemPerThr;
             }
+            Bitmap bmp = new Bitmap(bitmap.Bitmap);
 
-            bitmap.Save(path);
+            bmp.Save(path);
         }
 
-        public void writeColouredToFile(Pair<int,int> XY, int elems, ref Bitmap bmp)
+        public void writeColouredToFile(Pair<int,int> XY, int elems, MyBitmap bmp)
         {
             int row = XY.First;
             int col = XY.Second;

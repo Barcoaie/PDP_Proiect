@@ -49,6 +49,7 @@
   <ItemGroup>
     <Compile Include="Hough.cs" />
     <Compile Include="Image.cs" />
+    <Compile Include="MyBitmap.cs" />
     <Compile Include="Pair.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
