@@ -26,6 +26,8 @@ namespace PDP_Proiect
             Bits = new Int32[width * height];
             BitsHandle = GCHandle.Alloc(Bits, GCHandleType.Pinned);
             Bitmap = new Bitmap(width, height, width * 4, PixelFormat.Format32bppPArgb, BitsHandle.AddrOfPinnedObject());
+            BitmapData bmpdata = Bitmap.LockBits(new Rectangle(0, 0, width, height), ImageLockMode.ReadWrite, PixelFormat.Format24bppRgb);
+            Marshal.Copy(Bits, 0, bmpdata.Scan0, height * bmpdata.Stride);
         }
 
         public void SetPixel(int x, int y, Color colour)
